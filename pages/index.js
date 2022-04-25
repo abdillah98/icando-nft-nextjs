@@ -1,5 +1,9 @@
+import React, { useEffect } from 'react'
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router'
+import { useMoralis } from "react-moralis";
+
 import iconPlus from '../public/icons/icon-plus.svg';
 import iconImage from '../public/icons/icon-image.svg';
 import iconCategory from '../public/icons/icon-category.svg';
@@ -14,6 +18,7 @@ import {
 } from '../components/elements';
 
 export default function Index() {
+
     return (
         <div className="container">
             <h1 className="mb-4">Create New Item</h1>
@@ -35,6 +40,7 @@ export default function Index() {
                                 <div className="col-md-8">
                                     <TextField 
                                         id="name"
+                                        type="text"
                                         name="name"
                                         label="Name"
                                         placeholder="Cute nft #01..."

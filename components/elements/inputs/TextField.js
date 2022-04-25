@@ -1,4 +1,4 @@
-export default function TextField({label, name, id, value, placeholder, required, onChange}) {
+export default function TextField({label, type, name, id, value, placeholder, required, onChange}) {
 	return (
 		<>
 			<label 
@@ -9,7 +9,7 @@ export default function TextField({label, name, id, value, placeholder, required
 					{ required && <span className="text-danger">*</span> }
 			</label>
 			<input 
-				type="text" 
+				type={type} 
 				className="form-control" 
 				id={id} 
 				name={name} 

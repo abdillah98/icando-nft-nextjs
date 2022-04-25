@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router'
+import { useMoralis } from "react-moralis";
 
 import iconPlus from '../../public/icons/icon-plus.svg';
 import iconImage from '../../public/icons/icon-image.svg';
@@ -11,9 +12,16 @@ import { ButtonCircle } from '../elements'
 
 export default function Sidebar() {
 	const router = useRouter()
+	const {  logout } = useMoralis();
 	
 	const activeMenu = (pathname) => {
 		return router.pathname === pathname ? 'active' : ''
+	}
+
+	const onClickLogout = async () => {
+		await logout()
+		localStorage.removeItem('user')
+		router.push('/signin')
 	}
 
 	return (
@@ -42,7 +50,7 @@ export default function Sidebar() {
 		            <ButtonCircle 
         				icon={iconLogout} 
         				theme="btn-circle-light"
-        				withLink="/"
+        				onClick={() => onClickLogout()}
         			/>
 		        </li>
 		    </ul>

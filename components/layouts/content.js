@@ -1,6 +1,6 @@
-export default function Content({children}) {
+export default function Content({children, theme}) {
 	return (
-		<div className="content">
+		<div className={`content ${theme}`}>
 		    {children}
 		</div>
 	)

@@ -13,7 +13,7 @@ export default function ButtonCircle({icon, theme, active, withLink, onClick}) {
 							className={`btn-circle ${theme} ${active}`}
 							onClick={onClick}
 						>
-							<Image src={icon}/>
+							<Image src={icon} alt="image-icons"/>
 						</button>
 					</a>
 				</Link>
