@@ -8,9 +8,9 @@ export default function DropdownIcon({id, menuList, onClick}) {
 
 	const [show, setShow] = useState(false)
 
-	const handleClick = (id) => {
+	const handleClick = (id, label) => {
 		if (onClick) { 
-			onClick(id) 
+			onClick({id, label}) 
 		}
 		else {
 			alert('onClick props undefined!')
@@ -31,13 +31,13 @@ export default function DropdownIcon({id, menuList, onClick}) {
 						    <li key={index}>
 						    	<Link href="/">
 							    	<a className="dropdown-item d-flex" href="#">
-							    		<Image src={item.icon} alt="icon-edit" />
-							    		<span className="ms-2">Edit metadata</span>
+							    		<Image src={item.icon} alt={item.name} />
+							    		<span className="ms-2">{item.name}</span>
 							    	</a>
 						    	</Link>
 						    </li> :
-						    <div className="dropdown-item d-flex" onClick={() => handleClick(id)} key={index}>
-						    	<Image src={item.icon} alt="icon-delete" />
+						    <div className="dropdown-item d-flex" onClick={() => handleClick(id, item.name)} key={index}>
+						    	<Image src={item.icon} alt={item.name} />
 						    	<span className="ms-2">{item.name}</span>
 						    </div>
 						))

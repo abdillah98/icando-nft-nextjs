@@ -1,9 +1,11 @@
+import React, { useState, useEffect } from 'react';
 import imgDefault from '../public/images/image.png';
 import iconView from '../public/icons/icon-view.svg';
 import iconEdit from '../public/icons/icon-edit.svg';
 import iconHistory from '../public/icons/icon-history.svg';
 
-import { DropdownIcon, CardPrice } from '../components/modules'
+import { DropdownIcon, CardItems, CardItemsLoader } from '../components/modules'
+import { getCollectionList } from '../endpoint'
 
 const _menuList = [
 	{ id: 1, name: 'View on Opensea', icon: iconView, link: '/' },
@@ -19,26 +21,38 @@ const _itemList = [
 ]
 
 export default function Collections() {
-	console.log(_menuList)
+
+	const [itemList, setItemList] = useState([])
+	const [isLoading, setIsLoading] = useState(false)
+
+	const _getCollectionList = async () => {
+		setItemList(await getCollectionList())
+	}
+
+	useEffect(() => {
+		_getCollectionList()
+	}, [])
+
 	return (
 		<div className="container">
 			<h1 className="mb-4">Collection (mintend)</h1>
 			<div className="row pr-3">
 				{
-				_itemList.length > 0 &&
-				_itemList.map((item, index) => (
-					<div className="col-md-3 pr-0 mb-4" key={index}>
-						<CardPrice
-							id={item.id}
-							name={item.name} 
-							level={item.level}
-							price={item.price}
-							image={item.image}
-							options={_menuList}
-						/>
-					</div>
-				))
-			}
+					itemList.length > 0 &&
+					itemList.map((item, index) => (
+						<div className="col-md-3 pr-0 mb-4" key={index}>
+							<CardItems
+								id={item.id}
+								name={item.name} 
+								minted={item.minted}
+								image={item.image}
+								options={_menuList}
+								optionsClick={_onClickDropdown}
+							/>
+						</div>
+					))
+					// <CardItemsLoader theme="col-md-3 pr-0 mb-4" />
+				}
 			</div>
 		</div>
 	)

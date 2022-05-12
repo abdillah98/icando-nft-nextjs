@@ -33,7 +33,7 @@ h1, h2, h3, h4, h5, h6, strong {
 .content {
 	width: calc(100% - 80px);
 	margin-left: 80px;	
-	padding: 50px 100px;
+	padding: 0 100px 50px;
 }
 
 /*Button*/
@@ -48,6 +48,12 @@ h1, h2, h3, h4, h5, h6, strong {
 .btn-primary:hover {
 	background-color: #2b00e8;
 	border-color:#2b00e8;
+}
+.btn-outline-primary:focus,
+.btn-outline-primary:hover {
+	background-color: #4318FF;
+	border-color:#4318FF;
+	color: #fff;
 }
 
 .btn-circle {
@@ -88,6 +94,17 @@ h1, h2, h3, h4, h5, h6, strong {
 .btn-circle-light:hover {
 	background-color: #F4F1FF;
 	border-color: 1px solid #F4F1FF;
+}
+
+.btn-remove {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #fff;
+	padding: .2rem .6rem;
+	border-color: 4px;
+	border-radius: 4px;
+	border: 1px solid #E31A1A;
 }
 
 
@@ -180,6 +197,12 @@ h1, h2, h3, h4, h5, h6, strong {
 .text-primary {
 	color: #4318FF !important;
 }
+.text-success {
+	color: #01B574 !important;
+}
+.text-danger {
+	color: #E31A1A !important;
+}
 .text-loader {
 	height: 18px;
 	background-color: #eee;
@@ -230,8 +253,72 @@ h1, h2, h3, h4, h5, h6, strong {
 }
 
 
+/*Alert*/
+.alert-dialog {
+	position: fixed;
+	display: flex;
+	align-items: flex-start;
+	bottom: 15px;
+	right: 15px;
+	background-color: #fff;
+	z-index: 30px;
+	box-shadow: 0 4px 30px 0 #ddd;
+	border-radius: 10px;
+	padding: 15px;
+}
+.alert-dialog-icon {
+	margin-top: 1px;
+}
 
 
+/*Border*/
+.border-success {
+	border-color: #01B574 !important
+}
+.border-danger {
+	border-color: #E31A1A !important
+}
+
+
+/*Image */
+.image-file {
+	position: relative;
+	width: 200px;
+	height: 200px;
+	overflow: hidden;
+	border-radius: 10px !important;
+}
+.image-file img {
+	border-radius: 10px !important;
+}
+
+
+/*Custom*/
+.btn-group > 
+.btn:not(:last-child):not(.dropdown-toggle), 
+.btn-group > 
+.btn-group:not(:last-child) > 
+.btn {
+	border-top-left-radius: 50px;
+	border-bottom-left-radius: 50px;
+}
+.btn-group > 
+.btn:nth-child(n+3), 
+.btn-group > :not(.btn-check) + .btn, 
+.btn-group > 
+.btn-group:not(:first-child) > 
+.btn {
+	border-top-right-radius: 50px;
+	border-bottom-right-radius: 50px;
+}
+.input-group input {
+	border-top-left-radius: .5rem;
+	border-bottom-left-radius: .5rem;
+}
+.input-group button {
+	border-top-right-radius: .5rem;
+	border-bottom-right-radius: .5rem;
+}
 /*Small devices (landscape phones, 576px and up)*/
 @media (max-width: 576px) {
 	/*Wrapping*/

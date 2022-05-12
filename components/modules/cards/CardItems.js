@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import imgDefault from '../../../public/images/image.png';
-
 import { DropdownIcon } from '../lists'
 
-export default function CardItems({id, name, level, image, options}) {
+export default function CardItems({id, name, level, minted, image, options, optionsClick}) {
+
 	return (
 		<div className="card border-0 rounded-custom-sm shadow-custom">
 			{
@@ -12,6 +12,7 @@ export default function CardItems({id, name, level, image, options}) {
 					<DropdownIcon
 						id={id} 
 						menuList={options}
+						onClick={optionsClick}
 					/>
 				</div>
 			}
@@ -20,7 +21,7 @@ export default function CardItems({id, name, level, image, options}) {
 			</div>
 		  	<div className="card-body">
 			    <strong className="card-title d-block">{name}</strong>
-			    <span className="badge bg-primary">level {level}</span>
+			    {minted && <span className="badge bg-primary">minted</span>}
 		  	</div>
 		</div>
 	)
