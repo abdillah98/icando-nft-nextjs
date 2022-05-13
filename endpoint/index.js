@@ -187,7 +187,20 @@ const postImage = async (item) => {
     };
 
     // Upload image to aws
-    const { url } = await uploadFileS3(item.image)
+    const { url } = await uploadFileS3(item.image, 'nft')
+    return url
+}
+
+// Upload and get image url
+const postJsonFile = async (file, filename = null) => {
+	// Validate file
+    if (!file) {
+        alert('File is required!')
+        return false
+    };
+
+    // Upload image to aws
+    const { url } = await uploadFileS3(file, 'metadata', filename)
     return url
 }
 
@@ -202,4 +215,5 @@ export {
 	getItem,
 	getCollectionList,
 	postImage,
+	postJsonFile,
 }

@@ -1,4 +1,4 @@
-export default function TextArea({label, name, id, value, placeholder, required, rows, onChange}) {
+export default function TextArea({label, name, id, value, placeholder, required, rows, disabled, onChange}) {
 	return (
 		<>
 			<label 
@@ -16,6 +16,7 @@ export default function TextArea({label, name, id, value, placeholder, required,
 				placeholder={placeholder} 
 				required={required}
 				rows={rows}
+				disabled={disabled}
 				onChange={onChange}
 			/>
 		</>

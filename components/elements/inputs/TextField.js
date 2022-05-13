@@ -1,4 +1,4 @@
-export default function TextField({label, type, name, id, value, placeholder, required, onChange}) {
+export default function TextField({label, type, name, id, value, placeholder, required, disabled, onChange}) {
 	return (
 		<>
 			<label 
@@ -17,6 +17,7 @@ export default function TextField({label, type, name, id, value, placeholder, re
 				placeholder={placeholder} 
 				onChange={onChange}
 				required={required}
+				disabled={disabled}
 			/>
 		</>
 	)

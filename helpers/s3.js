@@ -1,13 +1,14 @@
-export default async function uploadFileS3(file) {
+export default async function uploadFileS3(file, folder, filename = null) {
 	const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 	const getDate = new Date();
-	const filename = `nft-${getDate.getTime()}`
+	const name = filename ? filename : `nft-${getDate.getTime()}`
 	
 	const response = await fetch('/api/s3', {
 		method: "POST",
 		body: JSON.stringify({
 			type: file.type,
-			name: filename,
+			name: name,
+			folder: folder
 		})
 	})
 
@@ -21,6 +22,6 @@ export default async function uploadFileS3(file) {
 		}
 	})
 
-	const responseUrl = {url: `${BUCKET_URL}/${filename}`}
+	const responseUrl = {url: `${BUCKET_URL}/${folder}/${name}`}
 	return responseUrl
 } 

@@ -5,6 +5,8 @@ import { useRouter } from 'next/router'
 import Moralis from 'moralis'
 import { useMoralis } from "react-moralis";
 import uploadFileS3 from '../helpers/s3'
+import createFile from '../helpers/create-file'
+import Web3 from 'web3'
 
 import iconPlus from '../public/icons/icon-plus.svg';
 import iconImage from '../public/icons/icon-image.svg';
@@ -14,8 +16,10 @@ import imgInputFile from '../public/images/input-file.svg';
 
 import { TextField, TextArea, InputFile, Card } from '../components/elements';
 import { AlertDialog } from '../components/modules';
-import { getItem, postItem, putItem, deleteItem, postImage } from '../endpoint'
+import { getItem, postItem, putItem, deleteItem, postImage, postJsonFile } from '../endpoint'
+import { contractABI2, contractAddress2 } from '../contracts'
 
+const web3 = new Web3(Web3.givenProvider)
 const initialItem = {
     id: null,
     name: '',
@@ -28,6 +32,7 @@ const initialItem = {
 export default function Index() {
     const router = useRouter();
     const { id }  = router.query;
+    console.log(id)
 
     // Initial state
     const [item, setItem] = useState(initialItem)
@@ -35,7 +40,25 @@ export default function Index() {
     const [confirmText, setConfirmText] = useState('')
     const [isLoadingSave, setIsLoadingSave] = useState(false)
     const [isLoadingDelete, setIsLoadingDelete] = useState(false)
+    const [isEdit, setIsEdit] = useState(true)
     
+    //Get Item
+    const _getItem = async (id) => {
+        if (id) {
+            const result = await getItem(id)
+            setItem({
+                ...item,
+                id: result.id,
+                name: result.name,
+                description: result.description,
+                image: result.image_url,
+                image_url: result.image_url,
+                metadata: result.metadata,
+                minted: result.minted,
+            })
+        }
+    }
+
     // Post add item
     const _addItem = async () => {
         setIsLoadingSave(true)
@@ -67,7 +90,7 @@ export default function Index() {
      // Put edit item
     const _updateItem = async () => {
         setIsLoadingSave(true)
-        
+
         const image_url = await postImage(item)
         const updateItem = typeof item.image === 'string' 
             ? await putItem(item)
@@ -76,11 +99,29 @@ export default function Index() {
         // Response
         if (updateItem) {
             setIsLoadingSave(false)
+            
+            const jsonObject = {
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                image: item.image_url,
+                attributes: JSON.parse(item.metadata),
+            }
+            
+            if (!item.minted) {
+                const filename = `${item.id}.json`;
+                const { blob } = await createFile(jsonObject);
+                const metadataUrl = await postJsonFile(blob, filename)
+                console.log(metadataUrl)
+            }
+
+            setIsEdit(true)
             setMessage({
                 icon: 'success',
                 title: 'Successed!',
                 description: 'Item Update successfully.'
             })
+
             await _getItem(id)
         }
         else {
@@ -159,20 +200,44 @@ export default function Index() {
         }
     } 
 
-    //Get Item
-    const _getItem = async (id) => {
-        if (id) {
-            const result = await getItem(id)
-            setItem({
-                ...item,
-                id: result.id,
-                name: result.name,
-                description: result.description,
-                image: result.image_url,
-                image_url: result.image_url,
-                metadata: result.metadata,
-                minted: result.minted,
-            })
+    // On Click open edit form
+    const _onClickEditForm = () => {
+        setIsEdit(false)
+        setMessage({
+            icon: 'success',
+            title: 'Editable',
+            description: 'Now you can change the data'
+        })
+    }
+
+    // On Click Mint nft
+    const _onClickMint = async () => {
+        const jsonObject = {
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            image: item.image_url,
+            attributes: JSON.parse(item.metadata),
+        }
+
+        const filename = `${item.id}.json`;
+        const { blob } = await createFile(jsonObject);
+        const metadataUrl = await postJsonFile(blob, filename)
+        console.log(metadataUrl)
+
+        //Interact with smart contract version 2
+        const accounts = await web3.eth.getAccounts()
+        const contract = new web3.eth.Contract(contractABI2, contractAddress2)
+        if (accounts) {
+            const response = await contract.methods
+                .mint(metadataUrl)
+                .send({from: accounts[0]})
+
+            if (response) {
+                const tokenId = response.events.Transfer.returnValues.tokenId
+                console.log({token_address: contractAddress2, token_id: tokenId})
+                alert(`Token Address: ${contractAddress2}, Token Id: ${tokenId}`)
+            }
         }
     }
 
@@ -182,12 +247,18 @@ export default function Index() {
         }
         else {
             setItem(initialItem)
+            setIsEdit(false)
         }
     }, [id])
 
     useEffect(() => {
         console.log(item)
     }, [item])
+
+
+    useEffect(() => {
+        console.log(isEdit)
+    }, [isEdit])
 
     return (
         <div className="container">
@@ -220,6 +291,7 @@ export default function Index() {
                                         placeholder="Cute nft #01..."
                                         value={item.name}
                                         onChange={_onChangeInput}
+                                        disabled={isEdit}
                                         required
                                     />
                                 </div>
@@ -233,6 +305,7 @@ export default function Index() {
                                         placeholder="Type your thoughts"
                                         value={item.description}
                                         onChange={_onChangeInput}
+                                        disabled={isEdit}
                                         rows={4}
                                     />
                                 </div>
@@ -246,24 +319,38 @@ export default function Index() {
                                          placeholder="{...}"
                                          value={item.metadata}
                                          onChange={_onChangeInput}
+                                         disabled={isEdit}
                                          rows={10}
                                      />
                                 </div>
                             </div>
-                            <button 
-                                type="submit" 
-                                className="btn btn-primary rounded-pill px-5 me-2"
-                            >
-                                {isLoadingSave ? 'Loading...' : 'Save'}
-                            </button>
                             {
-                                id && !item.minted && 
+                                id === undefined || !isEdit ?
                                 <button 
-                                    type="button" 
-                                    className="btn btn-outline-secondary rounded-pill px-5 me-2"
+                                    type="submit" 
+                                    className="btn btn-primary rounded-pill px-5 me-2"
                                 >
-                                    Mint
-                                </button>
+                                    {isLoadingSave ? 'Loading...' : 'Save'}
+                                </button> :
+                                <>
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-primary rounded-pill px-5 me-2"
+                                        onClick={() => _onClickEditForm()}
+                                    >
+                                        Edit
+                                    </button>
+                                    {
+                                        !item.minted && 
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-outline-secondary rounded-pill px-5 me-2"
+                                            onClick={() => _onClickMint()}
+                                        >
+                                            Mint
+                                        </button>
+                                    }
+                                </>
                             }
                         </form>
                         {
@@ -274,7 +361,7 @@ export default function Index() {
                             </div> :
                             <div className="alert alert-warning border border-warning rounded-custom-sm p-3 mb-0">
                                 <h4>Attention!</h4>
-                                <p className="my-0">Press the <code>"Mint"</code> button to upload the item to the blockchain network.</p>
+                                <p className="my-0">Press the <code>"Edit"</code> to change the data on this form.</p>
                             </div>
                         }
                     </Card>

@@ -8,11 +8,11 @@ const s3 = new S3({
 })
 
 export default async function handler(req, res) {
-	const { type, name } = JSON.parse(req.body)
+	const { type, name, folder } = JSON.parse(req.body)
 	const fileParams = {
 		Bucket: process.env.S3_UPLOAD_BUCKET,
 		ACL: process.env.S3_UPLOAD_ACL,
-		Key: `${process.env.S3_UPLOAD_FOLDER}/${name}`,
+		Key: `${process.env.S3_UPLOAD_FOLDER}/${folder}/${name}`,
 		ContentType: type,
 		Expires: 600,
 	}
