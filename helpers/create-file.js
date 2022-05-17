@@ -1,4 +1,5 @@
 export default async function createFile(jsonObject) {
+	
 	if (!jsonObject) {
 		alert('File is required!')
 		return false

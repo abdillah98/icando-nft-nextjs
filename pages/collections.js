@@ -1,59 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import imgDefault from '../public/images/image.png';
-import iconView from '../public/icons/icon-view.svg';
-import iconEdit from '../public/icons/icon-edit.svg';
-import iconHistory from '../public/icons/icon-history.svg';
-
-import { DropdownIcon, CardItems, CardItemsLoader } from '../components/modules'
+import React, { Component, Fragment } from 'react';
+import { CollectionLists } from '../components/templates'
 import { getCollectionList } from '../endpoint'
 
-const _menuList = [
-	{ id: 1, name: 'View on Opensea', icon: iconView, link: '/' },
-	{ id: 2, name: 'View on Rarible', icon: iconView, link: '/' },
-	{ id: 3, name: 'Update level to #2', icon: iconEdit, link: '' },
-	{ id: 4, name: 'History', icon: iconHistory, link: '/' },
-]
+export default class Collections extends Component {
+	constructor(props) {
+		super(props)
 
-const _itemList = [
-	{ id: 1, name: 'Item name #01 nft', level: 1, price: 0.0004, image: imgDefault },
-	{ id: 2, name: 'Item name #02 nft', level: 2, price: 0.0004, image: imgDefault },
-	{ id: 3, name: 'Item name #03 nft', level: 3, price: 0.0004, image: imgDefault },
-]
+		this.state = {
+			isLoading: false,
+			collectionLists: [],
+		}
 
-export default function Collections() {
-
-	const [itemList, setItemList] = useState([])
-	const [isLoading, setIsLoading] = useState(false)
-
-	const _getCollectionList = async () => {
-		setItemList(await getCollectionList())
+		this._getCollectionList = this._getCollectionList.bind(this)
 	}
 
-	useEffect(() => {
-		_getCollectionList()
-	}, [])
+	async _getCollectionList() {
+		this.setState({isLoading: true})
+		const collectionLists = await getCollectionList()
+		this.setState({isLoading: false, collectionLists})
+	}
 
-	return (
-		<div className="container">
-			<h1 className="mb-4">Collection (mintend)</h1>
-			<div className="row pr-3">
-				{
-					itemList.length > 0 &&
-					itemList.map((item, index) => (
-						<div className="col-md-3 pr-0 mb-4" key={index}>
-							<CardItems
-								id={item.id}
-								name={item.name} 
-								minted={item.minted}
-								image={item.image}
-								options={_menuList}
-								optionsClick={_onClickDropdown}
-							/>
-						</div>
-					))
-					// <CardItemsLoader theme="col-md-3 pr-0 mb-4" />
-				}
-			</div>
-		</div>
-	)
+
+	async componentDidMount() {
+		const { _getCollectionList } = this
+
+		await _getCollectionList()
+	}
+
+
+	componentDidUpdate() {
+		console.log(this.state.collectionLists)
+	}
+
+
+	render() {
+
+		const { isLoading, collectionLists } = this.state
+
+ 		return (
+			<Fragment>
+				<CollectionLists 
+					isLoading={isLoading}
+					collectionLists={collectionLists}
+				/>
+			</Fragment>
+		)
+	}
 }

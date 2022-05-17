@@ -283,8 +283,8 @@ h1, h2, h3, h4, h5, h6, strong {
 /*Image */
 .image-file {
 	position: relative;
-	width: 200px;
-	height: 200px;
+	width: 250px;
+	height: 250px;
 	overflow: hidden;
 	border-radius: 10px !important;
 }

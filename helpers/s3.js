@@ -22,6 +22,5 @@ export default async function uploadFileS3(file, folder, filename = null) {
 		}
 	})
 
-	const responseUrl = {url: `${BUCKET_URL}/${folder}/${name}`}
-	return responseUrl
+	return {url: `${BUCKET_URL}/${folder}/${name}`}
 } 

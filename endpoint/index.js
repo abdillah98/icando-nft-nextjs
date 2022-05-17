@@ -1,9 +1,18 @@
+import Web3 from 'web3'
 import uploadFileS3 from '../helpers/s3'
+import { 
+	contractABI2, 
+	contractAddress2 
+} from '../contracts'
 
+
+// Initial variable
+const web3 = new Web3(Web3.givenProvider)
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+
 // Get nft before mint list
-const getItemList = async () => {
+export async function getItemList() {
 	const apiUrl = `${API_URL}/mst_nft`
 	
 	const requestOptions = {
@@ -16,12 +25,17 @@ const getItemList = async () => {
 		const result = await response.json()
 		
 		if (result.status) {
-			const newResult = result?.data?.map(item => ({
+			const filterIsMinted = result?.data?.filter(item => !item.minted)
+			const newResult = filterIsMinted?.map(item => ({
 				id: item.id,
 				name: item.name,
-				image: item.image_url,
+				image_url: item.image_url,
 				level: item.level_id,
 				minted: item.minted,
+				metadata: item.metadata,
+				metadata_url: item.metadata_url,
+				description: item.description,
+				created_time: item.created_time,
 			}))
 
 			return newResult
@@ -36,7 +50,7 @@ const getItemList = async () => {
 }
 
 // Add nft new item
-const postItem = async (rawData, imageUrl) => {
+export async function postItem(rawData, imageUrl) {
     let apiUrl = `${API_URL}/mst_nft`
     
     let myHeaders = new Headers();
@@ -56,11 +70,24 @@ const postItem = async (rawData, imageUrl) => {
     const result = await response.json()
     
     // Response
-    return result.status
+    if (result.status) {
+    	return {
+    		status: result.status,
+    		message: 'Item added successfully.',
+    		data: rawData
+    	}
+    } 
+    else {
+    	return {
+    		status: result.status,
+    		message: 'Item failed to add.',
+    		data: rawData
+    	}
+    }
 }
 
 // Add nft new item
-const putItem = async (rawData, imageUrl = null) => {
+export async function putItem(rawData, imageUrl = null) {
 	console.log(rawData)
 	console.log(imageUrl)
     let apiUrl = `${API_URL}/mst_nft/${rawData.id}`
@@ -89,11 +116,24 @@ const putItem = async (rawData, imageUrl = null) => {
     const result = await response.json()
     
     // Response
-    return result.status
+    if (result.status) {
+    	return {
+    		status: result.status,
+    		message: 'Item Update successfully.',
+    		data: rawData
+    	}
+    } 
+    else {
+    	return {
+    		status: result.status,
+    		message: 'Item failed to Update.',
+    		data: rawData
+    	}
+    }
 }
 
 // Delete nft before mint
-const deleteItem = async (id) => {
+export async function deleteItem(id) {
 	const apiUrl = `${API_URL}/mst_nft/${id}`
 	
 	const requestOptions = {
@@ -112,7 +152,7 @@ const deleteItem = async (id) => {
 }
 
 // Get single nft 
-const getItem = async (id) => {
+export async function getItem(id) {
     const apiUrl = `${API_URL}/mst_nft/${id}`
     
     const requestOptions = {
@@ -131,6 +171,7 @@ const getItem = async (id) => {
                 description: result.data?.description,
                 image_url: result.data?.image_url,
                 metadata: result.data?.metadata,
+                metadata_url: result.data?.metadata_url,
                 minted: result.data?.minted,
             }
             return newResult
@@ -145,7 +186,7 @@ const getItem = async (id) => {
 }
 
 // Get nft minted list
-const getCollectionList = async () => {
+export async function getCollectionList() {
 	const apiUrl = `${API_URL}/mst_nft`
 	
 	const requestOptions = {
@@ -158,11 +199,11 @@ const getCollectionList = async () => {
 		const result = await response.json()
 		
 		if (result.status) {
-			const filterIsMinted = result?.data?.filter(item => item.minted === true)
+			const filterIsMinted = result?.data?.filter(item => item.minted)
 			const newResult = filterIsMinted?.map(item => ({
 				id: item.id,
 				name: item.name,
-				image: item.image_url,
+				image_url: item.image_url,
 				level: item.level_id,
 				minted: item.minted,
 			}))
@@ -179,7 +220,7 @@ const getCollectionList = async () => {
 }
 
 // Upload and get image url
-const postImage = async (item) => {
+export async function postImage(item) {
     // Validate image
     if (!item.image) {
         alert('Image is required!')
@@ -192,7 +233,7 @@ const postImage = async (item) => {
 }
 
 // Upload and get image url
-const postJsonFile = async (file, filename = null) => {
+export async function postJsonFile(file, filename = null) {
 	// Validate file
     if (!file) {
         alert('File is required!')
@@ -204,16 +245,37 @@ const postJsonFile = async (file, filename = null) => {
     return url
 }
 
+export async function mintItems(metadataUrl = null, accounts = null) {
+	if (accounts && metadataUrl) {
+		const contract = new web3.eth.Contract(contractABI2, contractAddress2)
+	    try {
+	    	const response = await contract.methods
+	    	    .mint(metadataUrl)
+	    	    .send({from: accounts})
 
-
-
-export {
-	getItemList,
-	postItem,
-	putItem,
-	deleteItem,
-	getItem,
-	getCollectionList,
-	postImage,
-	postJsonFile,
+	    	if (response) {
+	    	    const tokenId = response.events.Transfer.returnValues.tokenId
+	    	    console.log({token_address: contractAddress2, token_id: tokenId})
+	    	    // alert(`Token Address: ${contractAddress2}, Token Id: ${tokenId}`)
+	    	    return {
+	    	    	status: true,
+	    			message: 'Item mint successed!',
+	    			tokenAddress: contractAddress2,
+	    			tokenId: tokenId
+	    	    }
+	    	}
+	    }
+	    catch (error) {
+	    	return {
+	    		status: false,
+	    		message: 'Something wrong!'
+	    	}
+	    }
+	}
+	else {
+		return {
+			status: false,
+			message: 'Metadata url or Contract Address null'
+		}
+	}
 }
