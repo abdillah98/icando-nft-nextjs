@@ -1,4 +1,6 @@
-export default async function createFile(jsonObject) {
+import { postJsonFile } from '../endpoint';
+
+export async function createFile(jsonObject) {
 	
 	if (!jsonObject) {
 		alert('File is required!')
@@ -10,4 +12,11 @@ export default async function createFile(jsonObject) {
     const blob = new Blob([content], mimeType)
     const url = URL.createObjectURL(blob)
     return { blob, url }
+}
+
+export async function createMetadata(jsonObject) {
+	const filename = `${jsonObject.id}.json`;
+	const { blob } = await createFile(jsonObject);
+	const metadataUrl = await postJsonFile(blob, filename)
+	return metadataUrl
 }

@@ -2,19 +2,86 @@ import React, { Component, Fragment } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
+	Button, 
+} from '../../elements';
+import { 
 	CardItems, 
-	CardItemsLoader 
-} from '../../modules'
+	CardItemsLoader,
+	AlertDialog
+} from '../../modules';
 
 export default class ItemLists extends Component {
 
+	constructor(props) {
+		super(props)
+
+		this.state = {
+			itemsChecked: [],
+			disableChecked: false,
+		}
+
+		this._onCheckedItem = this._onCheckedItem.bind(this);
+	}
+
+	_onCheckedItem(e, item) {
+		const { checked } = e.target;
+
+		if (checked) {
+			this.setState(prevState => ({
+				itemsChecked: [
+					...prevState.itemsChecked, 
+					item
+				]
+			}));
+		}
+		else {
+			this.setState(prevState => ({
+				itemsChecked: prevState.itemsChecked.filter(value => 
+					value.id !== item.id
+				)
+			}));
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		//...
+	}
+
 	render() {
 		
-		const { isLoading, itemLists } = this.props
+		const { 
+			itemsChecked, 
+			disableChecked,
+		} = this.state;
+		const { 
+			isLoading, 
+			itemLists, 
+			message, 
+			isLoadingMint, 
+			_mintItems,
+			_emptyMessage,
+		} = this.props;
+		const { _onCheckedItem } = this;
 
 		return (
 			<div className="container">
-				<h1 className="mb-4">Item List</h1>
+				<div className="row mb-4">
+					<div className="col-md-12">
+						<div className="d-flex align-items-center">
+							<h1 className="me-3">Item List</h1>
+							{
+								itemsChecked.length > 0 &&
+									<Button 
+										type="button" 
+										theme="outline-primary"
+										label={`(${itemsChecked.length} items) Mint`}
+										isLoading={isLoadingMint} 
+										onClick={() => _mintItems(itemsChecked)} 
+									/>
+							}
+						</div>
+					</div>
+				</div>
 				<div className="row mb-4">
 					<div className="col-md-12">
 						<div className="row pr-3">
@@ -30,8 +97,9 @@ export default class ItemLists extends Component {
 														<CardItems
 															id={item.id}
 															name={item.name} 
-															// minted={item.minted}
 															image={item.image_url}
+															onChecked={(e) => _onCheckedItem(e, item)}
+															disableChecked={disableChecked}
 														/>
 													</a>
 												</Link>
@@ -39,13 +107,21 @@ export default class ItemLists extends Component {
 										))
 									} 
 								</> : 
-								<CardItemsLoader theme="col-md-3 pr-0 mb-4" />
+								<CardItemsLoader theme="col-lg-3 col-md-4 col-sm-6 pr-0 mb-4" />
 							}
 
 						</div>
 					</div>
 				</div>
+				{
+				    message &&
+				    <AlertDialog 
+				        message={message} 
+				        closeAlert={_emptyMessage}
+				    />
+				}
 			</div>
+
 		)
 	}
 }

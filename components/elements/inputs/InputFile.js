@@ -11,7 +11,8 @@ export default function InputFile({
 	required, 
 	onChange, 
 	removeFile,
-	useRemove
+	useRemove,
+	disabled
 }) {
 
 	const [fileUrl, setFileUrl] = useState(null)
@@ -23,7 +24,6 @@ export default function InputFile({
 			newUrl = file
 		}
 		else {
-			console.log('object')
 			newUrl = file ? URL.createObjectURL(file) : ''
 		}
 		setFileUrl(newUrl)
@@ -62,6 +62,7 @@ export default function InputFile({
 				    				type="button" 
 				    				className="btn-remove"
 				    				onClick={removeFile}
+				    				disabled={disabled}
 				    			>
 				    				<Image src={iconDelete} width={18} alt="icon-delete" />
 				    				<span className="text-danger ms-2">Remove</span>
@@ -83,6 +84,7 @@ export default function InputFile({
 				id={id}
 				name={name}
 				onChange={onChange}
+				disabled={disabled}
 			/>
 		</>
 	)

@@ -39,7 +39,7 @@ export default class CollectionLists extends Component {
 										))
 									} 
 								</> : 
-								<CardItemsLoader theme="col-md-3 pr-0 mb-4" />
+								<CardItemsLoader theme="col-lg-3 col-md-4 col-sm-6 pr-0 mb-4" />
 							}
 
 						</div>

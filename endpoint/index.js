@@ -1,8 +1,8 @@
 import Web3 from 'web3'
 import uploadFileS3 from '../helpers/s3'
 import { 
-	contractABI2, 
-	contractAddress2 
+	contractAddress, 
+	contractABI,
 } from '../contracts'
 
 
@@ -88,8 +88,6 @@ export async function postItem(rawData, imageUrl) {
 
 // Add nft new item
 export async function putItem(rawData, imageUrl = null) {
-	console.log(rawData)
-	console.log(imageUrl)
     let apiUrl = `${API_URL}/mst_nft/${rawData.id}`
     
     let myHeaders = new Headers();
@@ -163,14 +161,15 @@ export async function getItem(id) {
     try {
         const response = await fetch(apiUrl, requestOptions)
         const result = await response.json()
-        console.log(result)
+        
         if (result.status) {
+        	const metadata = result.data?.metadata !== null ? result.data?.metadata : '';
             const newResult = {
                 id: result.data?.id,
                 name: result.data?.name,
                 description: result.data?.description,
                 image_url: result.data?.image_url,
-                metadata: result.data?.metadata,
+                metadata: metadata ,
                 metadata_url: result.data?.metadata_url,
                 minted: result.data?.minted,
             }
@@ -245,22 +244,20 @@ export async function postJsonFile(file, filename = null) {
     return url
 }
 
-export async function mintItems(metadataUrl = null, accounts = null) {
-	if (accounts && metadataUrl) {
-		const contract = new web3.eth.Contract(contractABI2, contractAddress2)
+export async function mintItems(metadataUrl = [], accounts = null) {
+	if (accounts && metadataUrl.length > 0) {
 	    try {
+			const contract = new web3.eth.Contract(contractABI, contractAddress)
 	    	const response = await contract.methods
-	    	    .mint(metadataUrl)
+	    	    // .mint(metadataUrl)
+	    	    .safeMint(accounts, metadataUrl)
 	    	    .send({from: accounts})
-
 	    	if (response) {
 	    	    const tokenId = response.events.Transfer.returnValues.tokenId
-	    	    console.log({token_address: contractAddress2, token_id: tokenId})
-	    	    // alert(`Token Address: ${contractAddress2}, Token Id: ${tokenId}`)
 	    	    return {
 	    	    	status: true,
 	    			message: 'Item mint successed!',
-	    			tokenAddress: contractAddress2,
+	    			tokenAddress: contractAddress,
 	    			tokenId: tokenId
 	    	    }
 	    	}
