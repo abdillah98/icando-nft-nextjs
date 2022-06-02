@@ -8,6 +8,7 @@ import {
 	putItem, 
 	mintItems 
 } from '../endpoint';
+import imageDefault from '../public/images/image.png';
 
 // Initial web3js
 const web3 = new Web3(Web3.givenProvider)
@@ -34,7 +35,12 @@ export default class Items extends Component {
 	async _getItemList() {
 		this.setState({isLoading: true});
 		const itemLists = await getItemList();
-		this.setState({isLoading: false, itemLists});
+		if (itemLists.length > 0) {
+			this.setState({
+				isLoading: false, 
+				itemLists
+			});
+		}
 	}
 
 
@@ -58,14 +64,6 @@ export default class Items extends Component {
         if (mint.status) {
             await _updateItems(items);
             Router.push('/collections');
-            // this.setState({
-            // 	isLoadingMint: false,
-            // 	message: {
-	           //      icon: 'success',
-	           //      title: 'Editable',
-	           //      description: mint.message
-	           //  }
-            // })
         }
         else {
             this.setState({
@@ -92,7 +90,7 @@ export default class Items extends Component {
 
 
 	componentDidUpdate() {
-		// console.log(this.state.itemLists)
+		console.log(this.state.itemLists)
 	}
 
 

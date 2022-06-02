@@ -2142,3 +2142,22 @@ export const contractABI = [
 // 		"type": "function"
 // 	}
 // ]
+
+
+// Users
+
+// username: admin@icando
+// password: admin@123
+// role: admin
+
+// username: user1@icando
+// password: user1@123
+// role: user
+
+// username: user2@icando
+// password: user2@123
+// role: user
+
+// username: user3@icando
+// password: user3@123
+// role: user

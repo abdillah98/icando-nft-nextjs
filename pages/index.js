@@ -121,8 +121,10 @@ export default class Index extends Component {
     	const metadataUrl = await createMetadata(jsonObject)
     	const image_url = await postImage(item)
     	const updateItem = typeof item.image === 'string' 
-    	    ? await putItem({...item, metadata_url: metadataUrl})
-    	    : await putItem({...item, metadata_url: metadataUrl}, image_url)
+    	    // ? await putItem({...item, metadata_url: metadataUrl})
+    	    // : await putItem({...item, metadata_url: metadataUrl}, image_url)
+            ? await putItem({...item, minted: true, metadata_url: metadataUrl})
+            : await putItem({...item, minted: true, metadata_url: metadataUrl}, image_url)
 
     	// Response
     	if (updateItem.status) {

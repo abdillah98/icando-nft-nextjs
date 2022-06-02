@@ -20,3 +20,11 @@ export async function createMetadata(jsonObject) {
 	const metadataUrl = await postJsonFile(blob, filename)
 	return metadataUrl
 }
+
+export async function readJson(fileUrl) {
+	const url = URL.createObjectURL(fileUrl)
+	console.log(url)
+	const response = await fetch(url)
+	const json = await response.json()
+	return json
+}

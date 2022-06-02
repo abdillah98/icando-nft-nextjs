@@ -4,6 +4,7 @@ import {
 	contractAddress, 
 	contractABI,
 } from '../contracts'
+import imageDefault from '../public/images/image.png'
 
 
 // Initial variable
@@ -29,7 +30,7 @@ export async function getItemList() {
 			const newResult = filterIsMinted?.map(item => ({
 				id: item.id,
 				name: item.name,
-				image_url: item.image_url,
+				image_url: item.image_url !== '' || item.image_url !== null ? item.image_url : imageDefault,
 				level: item.level_id,
 				minted: item.minted,
 				metadata: item.metadata,
@@ -245,6 +246,8 @@ export async function postJsonFile(file, filename = null) {
 }
 
 export async function mintItems(metadataUrl = [], accounts = null) {
+	// console.log(metadataUrl)
+	// console.log(accounts)
 	if (accounts && metadataUrl.length > 0) {
 	    try {
 			const contract = new web3.eth.Contract(contractABI, contractAddress)

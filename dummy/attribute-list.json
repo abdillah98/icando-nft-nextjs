@@ -1,0 +1,18 @@
+[
+	{
+		"title": "Properties",
+		"description": "Textual traits that show up as rectangles"
+	},
+	{
+		"title": "Levels",
+		"description": "Numerical traits that show as a progress bar"
+	},
+	{
+		"title": "Stats",
+		"description": "Numerical traits that just show as numbers"
+	},
+	{
+		"title": "Boosts",
+		"description": "Numerical traits that show as a percentage or number of graph"
+	}
+]

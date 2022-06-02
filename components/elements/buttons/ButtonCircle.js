@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function ButtonCircle({icon, theme, active, withLink, onClick}) {
+export default function ButtonCircle({icon, theme, active, withLink, disabled, onClick}) {
 	return (
 		<>
 			{
@@ -12,6 +12,7 @@ export default function ButtonCircle({icon, theme, active, withLink, onClick}) {
 							type="button" 
 							className={`btn-circle ${theme} ${active}`}
 							onClick={onClick}
+							disabled={disabled}
 						>
 							<Image src={icon} alt="image-icons"/>
 						</button>
@@ -22,6 +23,7 @@ export default function ButtonCircle({icon, theme, active, withLink, onClick}) {
 					type="button" 
 					className={`btn-circle ${theme}`}
 					onClick={onClick}
+					disabled={disabled}
 				>
 					<Image src={icon} alt="image-icons"/>
 				</button>

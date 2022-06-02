@@ -73,7 +73,7 @@ export default class ItemLists extends Component {
 								itemsChecked.length > 0 &&
 									<Button 
 										type="button" 
-										theme="outline-primary"
+										theme="primary"
 										label={`(${itemsChecked.length} items) Mint`}
 										isLoading={isLoadingMint} 
 										onClick={() => _mintItems(itemsChecked)} 

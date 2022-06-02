@@ -76,7 +76,7 @@ export default function Header() {
 				</h6> :
 				<button 
 					type="button" 
-					className="btn btn-primary rounded-pill px-4"
+					className="btn btn-primary"
 					onClick={() => _onClickConnect()}
 				>
 					<div className="d-flex align-items-center">

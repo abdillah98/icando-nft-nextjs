@@ -38,9 +38,9 @@ export default function SignUp() {
 	}
 
 	return (
-		<div className="container">
-			<div className="row justify-content-center">
-				<div className="col-md-5">
+		<div className="auth-section">
+			<div className="row justify-content-center w-100">
+				<div className="col-lg-4 col-md-6 col-sm-8 col-12">
 					<Card>
 						<h3 className="text-center">Sign Up</h3>
 						<form onSubmit={(e) => _onClickSignUp(e)}>

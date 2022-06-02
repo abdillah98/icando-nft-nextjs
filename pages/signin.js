@@ -26,26 +26,26 @@ export default function SignIn() {
 	    login(username, password)
 	}
 
-	const _processSignIn = (_isAuthenticated, _authError) => {
-		if (_isAuthenticated && _authError === null) {
-			console.log('object')
-			const username = user?.get('username')
-			const email = user?.get('email')
-			const saveUser = { username, email }
+	// const _processSignIn = (_isAuthenticated, _authError) => {
+	// 	if (_isAuthenticated && _authError === null) {
+	// 		console.log('object')
+	// 		const username = user?.get('username')
+	// 		const email = user?.get('email')
+	// 		const saveUser = { username, email }
 
-			localStorage.setItem('user', JSON.stringify(saveUser))
-			router.push('/')
-		}
-	}
+	// 		localStorage.setItem('user', JSON.stringify(saveUser))
+	// 		router.push('/')
+	// 	}
+	// }
 
-	useEffect(() => {
-		_processSignIn(isAuthenticated, authError, user)
-	}, [isAuthenticated, authError])
+	// useEffect(() => {
+	// 	_processSignIn(isAuthenticated, authError, user)
+	// }, [isAuthenticated, authError])
 
 	return (
-		<div className="container">
-			<div className="row justify-content-center">
-				<div className="col-md-5">
+		<div className="auth-section">
+			<div className="row justify-content-center w-100">
+				<div className="col-lg-4 col-md-6 col-sm-8 col-12">
 					<Card>
 						<h3 className="text-center">Sign In</h3>
 						<form onSubmit={(e) => _onClickSignIn(e)}>
@@ -82,6 +82,7 @@ export default function SignIn() {
 							<button 
 								type="submit" 
 								className="btn btn-primary rounded-pill px-5 w-100"
+								disabled={isAuthenticating}
 							>
 								{!isAuthenticating ? 'Sign In' : 'Loading...'}
 							</button>

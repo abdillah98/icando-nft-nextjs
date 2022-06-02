@@ -1,6 +1,6 @@
-export default function TextField({label, type, name, id, value, placeholder, required, disabled, onChange}) {
+export default function TextField({label, type, theme, name, id, value, placeholder, required, disabled, onChange}) {
 	return (
-		<>
+		<div>
 			<label 
 				htmlFor={id} 
 				className="form-label"
@@ -10,7 +10,7 @@ export default function TextField({label, type, name, id, value, placeholder, re
 			</label>
 			<input 
 				type={type} 
-				className="form-control" 
+				className={`form-control ${theme}`} 
 				id={id} 
 				name={name} 
 				value={value} 
@@ -19,6 +19,6 @@ export default function TextField({label, type, name, id, value, placeholder, re
 				required={required}
 				disabled={disabled}
 			/>
-		</>
+		</div>
 	)
 }

@@ -8,6 +8,7 @@ const nextConfig = {
      		'gudang-icando.s3.ap-southeast-1.amazonaws.com'
      	]
   	},
+  	optimizeFonts: false
 }
 
 module.exports = nextConfig
