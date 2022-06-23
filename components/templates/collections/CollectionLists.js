@@ -14,7 +14,7 @@ export default class CollectionLists extends Component {
 
 		return (
 			<div className="container">
-				<h1 className="mb-4">Item List</h1>
+				<h1 className="mb-4">Collections</h1>
 				<div className="row mb-4">
 					<div className="col-md-12">
 						<div className="row pr-3">

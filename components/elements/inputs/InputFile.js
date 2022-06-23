@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image';
 import iconDelete from '../../../public/icons/icon-delete-red.svg';
 import imgInputFile from '../../../public/images/input-file.svg';
@@ -14,24 +14,44 @@ export default function InputFile({
 	useRemove,
 	disabled
 }) {
-
+	const _inputFile = useRef('image') 
 	const [fileUrl, setFileUrl] = useState(null)
+	const [fileType, setFileType] = useState('image')
 
 	const _getFileUrl = (file) => {
-		let newUrl = null
-		
-		if (typeof file === 'string') {
-			newUrl = file
+		if (file) {
+			if (typeof file === 'string') {
+				const strLength = file.length
+				const type = file.substring(strLength - 5, strLength)
+				setFileType(type)
+				setFileUrl(file) 
+				console.log(file)
+			}
+			else {
+				const type = file.type.substring(0, 5)
+				const blobUrl = typeof file !== 'string'  
+					? URL.createObjectURL(file) 
+					: ''
+				setFileType(type)
+				setFileUrl(blobUrl)
+			}
 		}
-		else {
-			newUrl = file ? URL.createObjectURL(file) : ''
-		}
-		setFileUrl(newUrl)
 	}
+
+	const _onChangeVideo = () => {
+		alert('s')
+	    _inputFile.current.click();
+  	};
 
 	useEffect(() => {
 		_getFileUrl(value)
 	}, [value])
+
+
+	useEffect(() => {
+		console.log(fileType)
+		console.log(fileUrl)
+	}, [fileType, fileUrl])
 
 	return (
 		<>
@@ -48,25 +68,38 @@ export default function InputFile({
 			    	fileUrl ?
 				    <div>
 				    	<div className={`image-file ${useRemove && 'mb-3'}`}>
-				    		<Image 
-				    			src={fileUrl} 
-				    			layout="fill"
-				    			alt={name} 
-				    		/>
+				    		{
+				    			fileType === null || 
+				    			fileType === 'image' ?
+				    			<Image 
+					    				src={fileUrl} 
+					    				layout="fill"
+					    				alt={name} 
+					    		/>:
+				    			<video controls>
+				    				<source src={fileUrl} type="video/mp4" />
+				    			</video>
+
+				    		}
 				    	</div>
 			    		{
 			    			useRemove &&
 				    		<>
-				    			<small className="d-block text-muted mb-2">Click the button to remove image or tap the image to change</small>
-				    			<button 
-				    				type="button" 
-				    				className="btn-remove"
-				    				onClick={removeFile}
-				    				disabled={disabled}
-				    			>
-				    				<Image src={iconDelete} width={18} alt="icon-delete" />
-				    				<span className="text-danger ms-2">Remove</span>
-				    			</button>
+				    			{
+				    				fileType === null ||
+				    				fileType === 'image' ?
+				    				<small className="d-block text-muted">Click the image to change the image.</small> :
+				    				<>
+				    					<small className="d-block text-muted mb-2">Click the button to change the video</small>
+				    					<button 
+				    						type="button" 
+				    						className="btn-remove text-danger px-3"
+				    						onClick={_onChangeVideo}
+				    					>
+				    						Change
+				    					</button>
+				    				</>
+				    			}
 				    		</>
 			    		}
 				    </div> :
@@ -85,6 +118,7 @@ export default function InputFile({
 				name={name}
 				onChange={onChange}
 				disabled={disabled}
+				ref={_inputFile}
 			/>
 		</>
 	)

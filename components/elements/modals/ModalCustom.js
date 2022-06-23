@@ -1,7 +1,7 @@
 export default function ModalCustom({children, title, description, show, theme, onClose}) {
 	return (
 		<div className={`custom-modal ${show ? 'show' : ''}`}>
-			<div className="modal-dialog">
+			<div className={`modal-dialog ${theme}`}>
 			    <div className="modal-content border-0 shadow rounded-custom-sm">
 			      	<div className="modal-header">
 				        <h5 className="modal-title">{title}</h5>

@@ -145,7 +145,12 @@ h1, h2, h3, h4, h5, h6, strong {
 	background-color: #eee;
 	border-top-left-radius: 10px;
 	border-top-right-radius: 10px;
-	/*overflow: hidden;*/
+	overflow: hidden;
+}
+.card-img img,
+.card-img video {
+	width: 100%;
+	object-fit: cover;
 }
 .card-img-option {
 	position: absolute;
@@ -316,13 +321,17 @@ h1, h2, h3, h4, h5, h6, strong {
 /*Image */
 .image-file {
 	position: relative;
-	width: 250px;
-	height: 250px;
+	width : 300px;
+	height: 0;
+	padding-bottom: 300px;
 	overflow: hidden;
 	border-radius: 10px !important;
 }
-.image-file img {
+.image-file img,
+.image-file video {
 	border-radius: 10px !important;
+	object-fit: cover;
+	width: 100%;
 }
 
 

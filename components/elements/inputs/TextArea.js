@@ -1,4 +1,4 @@
-export default function TextArea({label, name, id, value, placeholder, required, rows, disabled, onChange}) {
+export default function TextArea({label, name, id, value, placeholder, theme, required, rows, disabled, onChange}) {
 	return (
 		<>
 			<label 
@@ -9,7 +9,7 @@ export default function TextArea({label, name, id, value, placeholder, required,
 					{ required && <span className="text-danger">*</span> }
 			</label>
 			<textarea 
-				className="form-control" 
+				className={`form-control ${theme}`} 
 				id={id} 
 				name={name} 
 				value={value} 

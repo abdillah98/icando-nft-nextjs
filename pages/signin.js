@@ -9,7 +9,7 @@ import {
 
 export default function SignIn() {
 	const router = useRouter()
-
+	const pathname = router.pathname.substring(1, router.pathname.length)
 	const { 
 		user,
 		login, 
@@ -18,29 +18,25 @@ export default function SignIn() {
 		isAuthenticating,
 	} = useMoralis();
 
+
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	const [isLoged, setIsLoged] = useState(false);
 
-	const _onClickSignIn = (e) => {
+
+	const _onClickSignIn = async (e) => {
 	    e.preventDefault()
-	    login(username, password)
+	    // console.log(pathname)
+	    const loged = await login(username, password)
+	    if (loged) {
+	    	if (pathname === 'signin') {
+	    		router.push('/')
+	    	}
+	    	else {
+	    		router.push(`/${pathname}`)
+	    	}
+	    }
 	}
-
-	// const _processSignIn = (_isAuthenticated, _authError) => {
-	// 	if (_isAuthenticated && _authError === null) {
-	// 		console.log('object')
-	// 		const username = user?.get('username')
-	// 		const email = user?.get('email')
-	// 		const saveUser = { username, email }
-
-	// 		localStorage.setItem('user', JSON.stringify(saveUser))
-	// 		router.push('/')
-	// 	}
-	// }
-
-	// useEffect(() => {
-	// 	_processSignIn(isAuthenticated, authError, user)
-	// }, [isAuthenticated, authError])
 
 	return (
 		<div className="auth-section">

@@ -9,6 +9,9 @@ import {
 	CardItemsLoader,
 	AlertDialog
 } from '../../modules';
+import { 
+	SelectContract
+} from '../../sections';
 
 export default class ItemLists extends Component {
 
@@ -21,6 +24,14 @@ export default class ItemLists extends Component {
 		}
 
 		this._onCheckedItem = this._onCheckedItem.bind(this);
+		this._onClickMint = this._onClickMint.bind(this);
+	}
+
+	async _onClickMint(options) {
+		const { itemsChecked } = this.state
+		const { _mintItems  } = this.props
+
+		await _mintItems(itemsChecked, options)
 	}
 
 	_onCheckedItem(e, item) {
@@ -54,21 +65,25 @@ export default class ItemLists extends Component {
 			disableChecked,
 		} = this.state;
 		const { 
+			userRole, 
 			isLoading, 
 			itemLists, 
 			message, 
+			smartContractList, 
 			isLoadingMint, 
+			isModal, 
 			_mintItems,
 			_emptyMessage,
+			_isOpenModal,
 		} = this.props;
-		const { _onCheckedItem } = this;
+		const { _onCheckedItem, _onClickMint } = this;
 
 		return (
 			<div className="container">
 				<div className="row mb-4">
 					<div className="col-md-12">
 						<div className="d-flex align-items-center">
-							<h1 className="me-3">Item List</h1>
+							<h1 className="me-3">Items</h1>
 							{
 								itemsChecked.length > 0 &&
 									<Button 
@@ -76,7 +91,8 @@ export default class ItemLists extends Component {
 										theme="primary"
 										label={`(${itemsChecked.length} items) Mint`}
 										isLoading={isLoadingMint} 
-										onClick={() => _mintItems(itemsChecked)} 
+										onClick={_isOpenModal} 
+										// onClick={() => _mintItems(itemsChecked)} 
 									/>
 							}
 						</div>
@@ -94,13 +110,21 @@ export default class ItemLists extends Component {
 											<div className="col-lg-3 col-md-4 col-sm-6 pr-0 mb-4" key={index}>
 												<Link href={`/?id=${item.id}`}>
 													<a className="text-decoration-none">
-														<CardItems
-															id={item.id}
-															name={item.name} 
-															image={item.image_url}
-															onChecked={(e) => _onCheckedItem(e, item)}
-															disableChecked={disableChecked}
-														/>
+														{
+															userRole === 'minter' ?
+															<CardItems
+																id={item.id}
+																name={item.name} 
+																image={item.image_url}
+																onChecked={(e) => _onCheckedItem(e, item)}
+																disableChecked={disableChecked}
+															/> :
+															<CardItems
+																id={item.id}
+																name={item.name} 
+																image={item.image_url}
+															/>
+														}
 													</a>
 												</Link>
 											</div>
@@ -113,6 +137,18 @@ export default class ItemLists extends Component {
 						</div>
 					</div>
 				</div>
+				{
+					isModal && 
+					<SelectContract 
+						title="Confirm Dialog"
+						buttonLabel="Mint Now"
+						data={smartContractList}
+						onClose={_isOpenModal}
+						onSelected={_onClickMint}
+						isLoading={isLoadingMint}
+						show={isModal}
+					/>
+				}
 				{
 				    message &&
 				    <AlertDialog 

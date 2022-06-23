@@ -12,13 +12,16 @@ import {
 	deleteItem, 
 	postImage, 
 	postJsonFile, 
-	mintItems 
+	mintItems,
+    getSmartContractList,
 } from '../endpoint'
+import UserContext from '../contexts/UserContext'
 
 const web3 = new Web3(Web3.givenProvider)
 
 export default class Index extends Component {
-	
+	static contextType = UserContext
+    
 	constructor(props) {
 		super(props)
 
@@ -28,6 +31,9 @@ export default class Index extends Component {
 			isLoadingSave: false,
 			isLoadingDelete: false,
 			isLoadingMint: false,
+            isModal: false,
+            smartContractList: [],
+            userRole: null
 		}
 
 		this._getItem = this._getItem.bind(this)
@@ -37,6 +43,8 @@ export default class Index extends Component {
 		this._mintItems = this._mintItems.bind(this)
 		this._emptyMessage = this._emptyMessage.bind(this)
 		this._showMessage = this._showMessage.bind(this)
+        this._getContractList = this._getContractList.bind(this)
+        this._isOpenModal = this._isOpenModal.bind(this)
 	}
 
 	async _getItem() {
@@ -104,6 +112,7 @@ export default class Index extends Component {
 
     // Put edit item
     async _updateItem(item) {
+        console.log('_updateItem')
     	const { _getItem } = this
     	const { id } = this.props
 
@@ -121,12 +130,12 @@ export default class Index extends Component {
     	const metadataUrl = await createMetadata(jsonObject)
     	const image_url = await postImage(item)
     	const updateItem = typeof item.image === 'string' 
-    	    // ? await putItem({...item, metadata_url: metadataUrl})
-    	    // : await putItem({...item, metadata_url: metadataUrl}, image_url)
-            ? await putItem({...item, minted: true, metadata_url: metadataUrl})
-            : await putItem({...item, minted: true, metadata_url: metadataUrl}, image_url)
-
-    	// Response
+    	    ? await putItem({...item, metadata_url: metadataUrl.length > 0 ? metadataUrl : null})
+    	    : await putItem({...item, metadata_url: metadataUrl.length > 0 ? metadataUrl : null}, image_url)
+            // ? await putItem({...item, minted: true, metadata_url: metadataUrl})
+            // : await putItem({...item, minted: true, metadata_url: metadataUrl}, image_url)
+                
+        // Response
     	if (updateItem.status) {
             this.setState({
             	isLoadingSave: false,
@@ -186,7 +195,7 @@ export default class Index extends Component {
 
 
     // On Click Mint nft
-    async _mintItems(item) {
+    async _mintItems(item, options) {
     	const { id } = this.props
     	const { _getItem } = this
 
@@ -195,13 +204,22 @@ export default class Index extends Component {
         //Interact with smart contract version 2
         const metadataUrl = [item.metadata_url];
         const accounts = await web3.eth.getAccounts()
-        const mint = await mintItems(metadataUrl, accounts[0])
+        const { contractAddress, contractABI } = options
+        const mintOptions = {
+            accounts,
+            metadataUrl,
+            contractAddress,
+            contractABI
+        }
+
+        const mint = await mintItems(mintOptions)
         
         if (mint.status) {
             await putItem({...item, minted: true})
             await _getItem(id)
             this.setState({
             	isLoadingMint: false,
+                isModal: false,
             	message: {
 	                icon: 'success',
 	                title: 'Editable',
@@ -212,6 +230,7 @@ export default class Index extends Component {
         else {
             this.setState({
             	isLoadingMint: false,
+                isModal: false,
             	message: {
 	                icon: 'error',
 	                title: 'Failed!',
@@ -219,6 +238,17 @@ export default class Index extends Component {
 	            }
             })
         }
+    }
+
+    // Get contract list
+    async _getContractList() {
+        const smartContractList = await getSmartContractList()
+        this.setState({smartContractList})
+    }
+
+
+    _isOpenModal() {
+        this.setState(prevState => ({isModal: !prevState.isModal}))
     }
 
 
@@ -234,9 +264,12 @@ export default class Index extends Component {
     }
 
 
-	componentDidMount() {
-		// console.log(this.state.itemId)
-		// this._getItem()
+	async componentDidMount() {
+        const userRole = this.context
+        const { _getContractList } = this
+
+        this.setState({userRole})
+        await _getContractList() 
 	}
 
 
@@ -246,6 +279,9 @@ export default class Index extends Component {
 			isLoadingSave,
 			isLoadingDelete,
 			isLoadingMint,
+            isModal,
+            smartContractList,
+            userRole,
 		} = this.state
 		const { id } = this.props
 		const {
@@ -256,16 +292,20 @@ export default class Index extends Component {
 			_mintItems,
 			_emptyMessage,
 			_showMessage,
+            _isOpenModal,
 		} = this
  
 		return (
 			<>
 				<CreateItem 
 					id={id}
-					message={message}
+					userRole={userRole}
+                    message={message}
 					isLoadingSave={isLoadingSave}
 					isLoadingDelete={isLoadingDelete}
 					isLoadingMint={isLoadingMint}
+                    isModal={isModal}
+                    smartContractList={smartContractList}
 					_getItem={_getItem}
 					_addItem={_addItem}
 					_updateItem={_updateItem}
@@ -273,6 +313,7 @@ export default class Index extends Component {
 					_mintItems={_mintItems}
 					_emptyMessage={_emptyMessage}
 					_showMessage={_showMessage}
+                    _isOpenModal={_isOpenModal}
 				/>	
 			</>
 		)

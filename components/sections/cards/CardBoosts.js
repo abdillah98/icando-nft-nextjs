@@ -20,7 +20,7 @@ export default function CardBoosts({data}) {
 			{
 				item.length > 0 &&
 				item.map((row, index) => (
-					<div className="col-lg-6 col-md-4 col-sm-6 col-6 pe-0 pb-3" key={index}>
+					<div className="col-lg-6 col-md-4 col-sm-6 col-12 pe-0 pb-3" key={index}>
 						<CardBoost 
 							key={index}
 							traitType={row.trait_type}

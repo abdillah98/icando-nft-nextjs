@@ -27,6 +27,8 @@ import {
 	BarLevels,
 	ListStats,
 	CardBoosts,
+	ConfirmMint,
+	SelectContract,
 } from '../../sections';
 import { 
 	getItemList, 
@@ -50,11 +52,14 @@ import iconGraph from '../../../public/icons/icon-graph.svg';
 import iconChart from '../../../public/icons/icon-chart.svg';
 import iconPlusDark from '../../../public/icons/icon-plus-dark.svg';
 
+const web3 = new Web3(Web3.givenProvider)
+
 const initialItem = {
     id: null,
     name: '',
     description: '',
     image: null,
+    animasi_url: null,
     image_url: '',
     metadata: '',
     metadata_url: '',
@@ -209,11 +214,11 @@ export default class CreateItem extends Component {
 	}
 
 
-	async _onClickMint() {
+	async _onClickMint(options) {
 		const { item } = this.state
 		const { _mintItems  } = this.props
 
-		await _mintItems(item)
+		await _mintItems(item, options)
 	}
 
 
@@ -240,14 +245,18 @@ export default class CreateItem extends Component {
 	async _onClickUploadJson(e) {
 		const { files } = e.target
 		const file = files[0]
-		const item = await readJson(file)
-		const { attributes } = item
-		this.setState({
+		const { item } = this.state
+		const json = await readJson(file)
+		const { attributes, image } = json
+		const imgUrl = item.image !== null ? item.image : image
+		const metadata = JSON.stringify(attributes, null, "\t")
+		this.setState(prevState => ({
 			item: {
-				...item, 
-				metadata: JSON.stringify(attributes, null, "\t")
+				...json, 
+				image: imgUrl,
+				metadata: metadata
 			}
-		})
+		}))
 	}
 
 
@@ -531,6 +540,7 @@ export default class CreateItem extends Component {
 			// console.log(_filter)
 		}
 
+		console.log(this.state.item)
 		// console.log(this.state.jsonFile)
 		// console.log(this.state.propertiesModal)
 	}
@@ -552,11 +562,15 @@ export default class CreateItem extends Component {
 		} = this.state
 		const {
 			id,
+			userRole,
 			message,
 			isLoadingSave,
 			isLoadingDelete,
 			isLoadingMint,
+			isModal,
+			smartContractList,
 			_emptyMessage,
+			_isOpenModal,
 		} = this.props
 		const { 
 			_onChangeFile, 
@@ -589,7 +603,7 @@ export default class CreateItem extends Component {
 	            	{id ? 'Edit Item' : 'Create New Item'}
 	            </h1>
 	            <div className="row mb-4">
-	                <div className="col-lg-8 col-md-12 col-sm-12">
+	                <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12">
 	                	<Card>
 	                		<form className="mb-4">
 	                			{_renderButtonUploadJson(id, _onClickUploadJson)}
@@ -724,12 +738,12 @@ export default class CreateItem extends Component {
     			    					/>
     			    					{
     			    						!item.minted && 
+    			    						userRole === 'minter' && 
     			    						<Button 
     			    							type="button"
     			    							label="Mint"
     			    							theme="outline-secondary rounded-pill px-5 me-2"
-    			    							isLoading={isLoadingMint}
-    			    							onClick={_onClickMint}
+    			    							onClick={_isOpenModal}
     			    						/>
     			    					}
     			    				</>
@@ -739,6 +753,18 @@ export default class CreateItem extends Component {
 	                	</Card>	
 	                </div>
 	            </div>
+	            {
+	            	isModal && 
+	            	<SelectContract 
+	            		title="Confirm Dialog"
+	            		buttonLabel="Mint Now"
+	            		data={smartContractList}
+	            		onClose={_isOpenModal}
+	            		onSelected={_onClickMint}
+	            		isLoading={isLoadingMint}
+	            		show={isModal}
+	            	/>
+	            }
 	            {_renderFormDelete(item, id, confirmText, isLoadingDelete, _onChangeConfrimText, _onConfirmDelete)}      
 	            {_renderMessageAlert(message, _emptyMessage)}
 	       	</div>

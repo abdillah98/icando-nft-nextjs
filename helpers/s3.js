@@ -1,7 +1,7 @@
 export default async function uploadFileS3(file, folder, filename = null) {
 	const BUCKET_URL = process.env.NEXT_PUBLIC_BUCKET_URL;
 	const getDate = new Date();
-	const name = filename ? filename : `nft-${getDate.getTime()}`
+	const name = filename ? filename : `nft-${getDate.getTime()}-type-${file.type.substring(0, 5)}`
 	
 	const response = await fetch('/api/s3', {
 		method: "POST",
